@@ -10,10 +10,12 @@ Requirements
 ------------
 The software requirements for build and runtime are as follows:
 
-    - python (required for build only)
+    - python (required for build only for waf)
         http://www.python.org/
     - gtkmm
+        http://www.gtkmm.org
     - libxml++
+        http://libxmlplusplus.sourceforge.net/
     - Jack Audio Connection Kit
         http://jackaudio.org/
     - ALSA

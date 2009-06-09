@@ -35,8 +35,11 @@ public:
     Cue() : delay(0.0), autocont(false), target(0), keyval(0) {}
     virtual ~Cue() {}
 
+    enum {Base, MIDI, Wave, Stop, Fade, Group, Pause, Start};
+
     virtual std::string cue_type_text() { return "";}
-    virtual bool run() { return true;}
+    virtual int cue_type() { return Base; }
+    virtual bool run(Gtk::TreeModel::iterator r) { return true;}
     virtual void serialize(xmlpp::Element *cel);
     virtual bool validate() { return true;}
     std::string validate_reason() { return v_reason;}
@@ -59,7 +62,8 @@ protected:
 class Group_Cue : public Cue {
 public:
     virtual std::string cue_type_text() { return "Group"; }
-    virtual bool run();
+    virtual int cue_type() { return Group; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 
     int mode;
@@ -68,7 +72,8 @@ public:
 class MIDI_Cue : public Cue {
 public:
     virtual std::string cue_type_text() { return "MIDI"; }
-    virtual bool run();
+    virtual int cue_type() { return MIDI; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 
     class msg {
@@ -84,7 +89,8 @@ class Wave_Cue : public Cue {
 public:
     Wave_Cue() : start_time(0.0) { vol.resize(8); }
     virtual std::string cue_type_text() { return "Wave"; }
-    virtual bool run();
+    virtual int cue_type() { return Wave; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 
     std::string file;
@@ -98,21 +104,24 @@ public:
 class Stop_Cue : public Cue {
 public:
     virtual std::string cue_type_text() { return "Stop"; }
-    virtual bool run();
+    virtual int cue_type() { return Stop; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 };
 
 class Pause_Cue : public Cue {
 public:
     virtual std::string cue_type_text() { return "Pause"; }
-    virtual bool run();
+    virtual int cue_type() { return Pause; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 };
 
 class Start_Cue : public Cue {
 public:
     virtual std::string cue_type_text() { return "Start"; }
-    virtual bool run();
+    virtual int cue_type() { return Start; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 };
 
@@ -121,7 +130,8 @@ public:
     FadeStop_Cue() : stop_on_complete(false), pause_on_complete(false), fade_time(0.0) {}
 
     virtual std::string cue_type_text() { return "Fade"; }
-    virtual bool run();
+    virtual int cue_type() { return Fade; }
+    virtual bool run(Gtk::TreeModel::iterator r);
     virtual void serialize(xmlpp::Element *cel);
 
     bool stop_on_complete;

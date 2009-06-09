@@ -185,7 +185,6 @@ public:
     static void show(boost::shared_ptr<Cue> q, Gtk::TreeRowReference & r);
     static void show_on_hide();
 
-    enum {MIDI, Wave, Stop, Fade, Group, Pause, Start};
 protected:
     virtual bool on_key_press_event(GdkEventKey *);
     virtual bool on_key_release_event(GdkEventKey *event);
@@ -194,6 +193,7 @@ private:
     void apply_activate();
     void cancel_activate();
     void trigger_key();
+    bool get_target(const Gtk::TreeModel::iterator & i);
     bool check_key(const Gtk::TreeModel::iterator & i);
 
     Gtk::Entry * m_info_cueid;

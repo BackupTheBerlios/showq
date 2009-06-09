@@ -205,19 +205,19 @@ App::App(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml)
         ->signal_activate().connect(sigc::mem_fun(*this, &App::hide));
 
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_midi_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::MIDI));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::MIDI));
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_wave_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::Wave));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::Wave));
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_stop_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::Stop));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::Stop));
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_fade_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::Fade));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::Fade));
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_group_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::Group));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::Group));
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_pause_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::Pause));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::Pause));
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_new_start_cue"))
-        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), EditCue::Start));
+        ->signal_activate().connect(sigc::bind<int>(sigc::mem_fun(*this, &App::on_new_cue_activate), Cue::Start));
 
     Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_edit_cue"))
 	->signal_activate().connect(sigc::mem_fun(*this, &App::on_edit_cue_activate));
@@ -398,7 +398,7 @@ App::App(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml)
     // Set a timer to update the display
     dis_timer = Glib::signal_timeout().connect(sigc::mem_fun(*this, &App::dis_update), 100);
 
-    pb_pos_sel = false;
+    pb_pos_sel = true;
 
     Window::show();
 }
@@ -1055,7 +1055,7 @@ Gtk::TreeModel::iterator App::go_cue(Gtk::TreeModel::iterator iter, bool run_all
 	        citer = go_cue(citer, (pg->mode == 0) ? true : false);
 		if (citer) iter = citer;
 	    }
-	    q->run();
+	    q->run(iter);
 	}
 
 	if (!run_all && !q->autocont)
@@ -1096,7 +1096,7 @@ bool App::wait_timeout()
 	    citer = go_cue(citer, (pg->mode == 0) ? true : false);
 	    if (citer) iter = citer;
 	}
-        cue->run();
+        cue->run(iter);
     }
     if (waiting_cue.size() == 0)
 	return false;
@@ -1106,7 +1106,7 @@ bool App::wait_timeout()
     return false;
 }
 
-bool Pause_Cue::run()
+bool Pause_Cue::run(Gtk::TreeModel::iterator r)
 {
     std::list<WaitingCue>::iterator i = app->waiting_cue.begin();
     for (; i != app->waiting_cue.end(); ++i) {
@@ -1122,7 +1122,7 @@ bool Pause_Cue::run()
     return false;
 }
 
-bool Start_Cue::run()
+bool Start_Cue::run(Gtk::TreeModel::iterator r)
 {
     std::map<long, Gtk::TreeRowReference>::iterator miter
 	= app->m_reftreerow.find(target);
@@ -1136,7 +1136,7 @@ bool Start_Cue::run()
     return false;
 }
 
-bool Stop_Cue::run()
+bool Stop_Cue::run(Gtk::TreeModel::iterator r)
 {
     std::list<WaitingCue>::iterator i = app->waiting_cue.begin();
     for (; i != app->waiting_cue.end(); ++i) {
@@ -1152,7 +1152,7 @@ bool Stop_Cue::run()
     return false;
 }
 
-bool Wave_Cue::run()
+bool Wave_Cue::run(Gtk::TreeModel::iterator r)
 {
     RunningCue rq;
 
@@ -1167,16 +1167,13 @@ bool Wave_Cue::run()
 
     audio->add_af(af);
     rq.cue_id_no = cue_id_no;
-    std::map<long, Gtk::TreeRowReference>::iterator miter
-        = app->m_reftreerow.find(cue_id_no);
-    if (miter == app->m_reftreerow.end()) return true;
-    rq.r_cue = miter->second;
+    rq.r_cue = Gtk::TreeRowReference(app->m_refTreeModel, Gtk::TreePath(r));
     rq.af = af;
     app->running_cue.push_back(rq);
     return true;
 }
 
-bool MIDI_Cue::run()
+bool MIDI_Cue::run(Gtk::TreeModel::iterator r)
 {
     snd_midi_event_t *dev;
     snd_midi_event_new(100, &dev);
@@ -1202,7 +1199,7 @@ bool MIDI_Cue::run()
     return false;
 }
 
-bool FadeStop_Cue::run()
+bool FadeStop_Cue::run(Gtk::TreeModel::iterator r)
 {
     RunningCue rq;
 
@@ -1212,11 +1209,7 @@ bool FadeStop_Cue::run()
 	    rq.af = j->af;
 
 	    rq.cue_id_no = cue_id_no;
-	    std::map<long, Gtk::TreeRowReference>::iterator miter
-		= app->m_reftreerow.find(cue_id_no);
-	    if (miter == app->m_reftreerow.end()) continue;
-	    rq.r_cue = miter->second;
-
+	    rq.r_cue = Gtk::TreeRowReference(app->m_refTreeModel, Gtk::TreePath(r));
 	    rq.fade = boost::shared_ptr<AudioFile::fade_>(new AudioFile::fade_);
 	    rq.fade->vol = tvol;
 	    rq.fade->on = on;
@@ -1232,7 +1225,7 @@ bool FadeStop_Cue::run()
     return false;
 }
 
-bool Group_Cue::run()
+bool Group_Cue::run(Gtk::TreeModel::iterator r)
 {
     return true;
 }

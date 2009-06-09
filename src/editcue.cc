@@ -94,7 +94,7 @@ EditCue * EditCue::show(int type)
     p->m_type = type;
     p->cue_id_no = 0;
 
-    if (type == MIDI || type == Wave || type == Group) {
+    if (type == Cue::MIDI || type == Cue::Wave || type == Cue::Group) {
         p->m_info_target->hide();
         Gtk::Widget * tl;
         refXml->get_widget("ed_info_target_label", tl);
@@ -102,25 +102,25 @@ EditCue * EditCue::show(int type)
     }
 
     switch (type) {
-    case MIDI:
+    case Cue::MIDI:
 	p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCueMidi(p->m_notebook));
 	break;
-    case Wave:
+    case Cue::Wave:
 	p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCueWave(p->m_notebook));
 	break;
-    case Stop:
+    case Cue::Stop:
 	p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCueStop(p->m_notebook));
 	break;
-    case Fade:
+    case Cue::Fade:
 	p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCueFade(p->m_notebook));
         break;
-    case Group:
+    case Cue::Group:
         p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCueGroup(p->m_notebook));
         break;
-    case Pause:
+    case Cue::Pause:
         p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCuePause(p->m_notebook));
         break;
-    case Start:
+    case Cue::Start:
         p->m_tabs = boost::shared_ptr<EditCueBase>(new EditCueStart(p->m_notebook));
         break;
     }
@@ -136,31 +136,7 @@ EditCue * EditCue::show(int type)
 
 void EditCue::show(boost::shared_ptr<Cue> q, Gtk::TreeRowReference & r)
 {
-    boost::shared_ptr<MIDI_Cue> pm = boost::dynamic_pointer_cast<MIDI_Cue>(q);
-    boost::shared_ptr<Wave_Cue> pw = boost::dynamic_pointer_cast<Wave_Cue>(q);
-    boost::shared_ptr<Stop_Cue> ps = boost::dynamic_pointer_cast<Stop_Cue>(q);
-    boost::shared_ptr<FadeStop_Cue> pfs = boost::dynamic_pointer_cast<FadeStop_Cue>(q);
-    boost::shared_ptr<Group_Cue> pg = boost::dynamic_pointer_cast<Group_Cue>(q);
-    boost::shared_ptr<Pause_Cue> pp = boost::dynamic_pointer_cast<Pause_Cue>(q);
-    boost::shared_ptr<Start_Cue> pst = boost::dynamic_pointer_cast<Start_Cue>(q);
-
-    EditCue * p = 0;
-
-    if (pm) {
-	p = show(MIDI);
-    } else if (pw) {
-	p = show(Wave);
-    } else if (ps) {
-	p = show(Stop);
-    } else if (pfs) {
-	p = show(Fade);
-    } else if (pg) {
-        p = show(Group);
-    } else if (pp) {
-        p = show(Pause);
-    } else if (pst) {
-        p = show(Start);
-    }
+    EditCue * p = show(q->cue_type());
 
     p->m_tabs->set(q);
 
@@ -173,18 +149,20 @@ void EditCue::show(boost::shared_ptr<Cue> q, Gtk::TreeRowReference & r)
     p->keyval = q->keyval;
     p->state = q->state;
 
-    std::map<long, Gtk::TreeRowReference>::iterator miter
-	= app->m_reftreerow.find(q->target);
-    if (miter != app->m_reftreerow.end()) {
-        Gtk::TreeRowReference path = miter->second;
-        Gtk::TreeModel::iterator iter = app->m_refTreeModel->get_iter(path.get_path());
-        if (iter) {
-            boost::shared_ptr<Cue> tq = (*iter)[app->m_refTreeModel->Col.cue];
-            p->m_info_target->set_text(tq->cue_id);
-        }
-    }
+    p->target = q->target;
+    app->m_refTreeModel->foreach_iter(sigc::mem_fun(p, &EditCue::get_target));
 
     p->m_path = r;
+}
+
+bool EditCue::get_target(const Gtk::TreeModel::iterator & i)
+{
+    boost::shared_ptr<Cue> tq = (*i)[app->m_refTreeModel->Col.cue];
+    if (tq->cue_id_no == target) {
+        m_info_target->set_text(tq->cue_id);
+        return true;
+    }
+    return false;
 }
 
 void EditCue::ok_activate()
@@ -192,25 +170,25 @@ void EditCue::ok_activate()
     boost::shared_ptr<Cue> cue;
 
     switch (m_type) {
-    case MIDI:
+    case Cue::MIDI:
         cue = boost::shared_ptr<MIDI_Cue>(new MIDI_Cue);
         break;
-    case Wave:
+    case Cue::Wave:
         cue = boost::shared_ptr<Wave_Cue>(new Wave_Cue);
         break;
-    case Stop:
+    case Cue::Stop:
         cue = boost::shared_ptr<Stop_Cue>(new Stop_Cue);
         break;
-    case Fade:
+    case Cue::Fade:
         cue = boost::shared_ptr<FadeStop_Cue>(new FadeStop_Cue);
         break;
-    case Group:
+    case Cue::Group:
         cue = boost::shared_ptr<Group_Cue>(new Group_Cue);
         break;
-    case Pause:
+    case Cue::Pause:
         cue = boost::shared_ptr<Pause_Cue>(new Pause_Cue);
         break;
-    case Start:
+    case Cue::Start:
         cue = boost::shared_ptr<Start_Cue>(new Start_Cue);
         break;
     default:
@@ -281,7 +259,6 @@ void EditCue::show_on_hide()
 
 bool EditCue::on_key_press_event(GdkEventKey *event)
 {
-
     return Window::on_key_press_event(event);
 }
 
