@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!--Generated with glade3 3.4.5 on Sun May 31 14:21:57 2009 -->
+<!--Generated with glade3 3.4.5 on Sun Jun 14 11:09:12 2009 -->
 <interface>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">0</property>
@@ -35,34 +35,39 @@
                 <property name="n_rows">2</property>
                 <property name="n_columns">3</property>
                 <child>
-                  <object class="GtkSpinButton" id="re_step">
+                  <object class="GtkLabel" id="label96">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="adjustment">adjustment1</property>
-                    <property name="climb_rate">1</property>
-                    <property name="digits">2</property>
-                    <property name="numeric">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Start number</property>
                   </object>
                   <packing>
-                    <property name="left_attach">2</property>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"/>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="re_start">
+                  <object class="GtkLabel" id="label97">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="adjustment">adjustment2</property>
-                    <property name="climb_rate">1</property>
-                    <property name="digits">2</property>
-                    <property name="numeric">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">: </property>
                   </object>
                   <packing>
-                    <property name="left_attach">2</property>
-                    <property name="right_attach">3</property>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"/>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label98">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Step</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"/>
                   </packing>
                 </child>
@@ -82,39 +87,34 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label98">
+                  <object class="GtkSpinButton" id="re_start">
                     <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Step</property>
+                    <property name="can_focus">True</property>
+                    <property name="adjustment">adjustment1</property>
+                    <property name="climb_rate">1</property>
+                    <property name="digits">2</property>
+                    <property name="numeric">True</property>
                   </object>
                   <packing>
+                    <property name="left_attach">2</property>
+                    <property name="right_attach">3</property>
+                    <property name="y_options"/>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="re_step">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="adjustment">adjustment2</property>
+                    <property name="climb_rate">1</property>
+                    <property name="digits">2</property>
+                    <property name="numeric">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="right_attach">3</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"/>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label97">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">: </property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"/>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label96">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Start number</property>
-                  </object>
-                  <packing>
-                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"/>
                   </packing>
                 </child>

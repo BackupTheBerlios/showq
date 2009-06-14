@@ -939,6 +939,12 @@ void App::on_go_activate()
 
     Gtk::TreeModel::iterator iter = go_cue(siter);
 
+    try {
+        if (keyfile.get_boolean("main", "DisableMoveNext")) return;
+    }
+    catch (...) {
+    }
+
     if (iter) iter++;
     if (!iter) {
         Gtk::TreeModel::Path p = Gtk::TreeModel::Path(siter);

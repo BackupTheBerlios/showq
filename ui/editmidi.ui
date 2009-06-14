@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<!--Generated with glade3 3.4.5 on Sun May 31 14:21:57 2009 -->
+<!--Generated with glade3 3.4.5 on Sun Jun 14 11:09:12 2009 -->
 <interface>
   <object class="GtkAdjustment" id="adjustment1">
-    <property name="upper">127</property>
-    <property name="lower">0</property>
-    <property name="page_increment">10</property>
+    <property name="upper">16</property>
+    <property name="lower">1</property>
+    <property name="page_increment">1</property>
     <property name="step_increment">1</property>
-    <property name="page_size">10</property>
+    <property name="page_size">1</property>
     <property name="value">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment10">
@@ -18,7 +18,7 @@
     <property name="value">0</property>
   </object>
   <object class="GtkAdjustment" id="adjustment11">
-    <property name="upper">59</property>
+    <property name="upper">29</property>
     <property name="lower">0</property>
     <property name="page_increment">10</property>
     <property name="step_increment">1</property>
@@ -26,7 +26,7 @@
     <property name="value">0</property>
   </object>
   <object class="GtkAdjustment" id="adjustment12">
-    <property name="upper">23</property>
+    <property name="upper">99</property>
     <property name="lower">0</property>
     <property name="page_increment">10</property>
     <property name="step_increment">1</property>
@@ -42,11 +42,11 @@
     <property name="value">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment3">
-    <property name="upper">16</property>
-    <property name="lower">1</property>
-    <property name="page_increment">1</property>
+    <property name="upper">127</property>
+    <property name="lower">0</property>
+    <property name="page_increment">10</property>
     <property name="step_increment">1</property>
-    <property name="page_size">1</property>
+    <property name="page_size">10</property>
     <property name="value">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment4">
@@ -82,7 +82,7 @@
     <property name="value">0</property>
   </object>
   <object class="GtkAdjustment" id="adjustment8">
-    <property name="upper">99</property>
+    <property name="upper">23</property>
     <property name="lower">0</property>
     <property name="page_increment">10</property>
     <property name="step_increment">1</property>
@@ -90,7 +90,7 @@
     <property name="value">0</property>
   </object>
   <object class="GtkAdjustment" id="adjustment9">
-    <property name="upper">29</property>
+    <property name="upper">59</property>
     <property name="lower">0</property>
     <property name="page_increment">10</property>
     <property name="step_increment">1</property>
@@ -510,7 +510,43 @@
                     <property name="n_rows">3</property>
                     <property name="n_columns">2</property>
                     <child>
-                      <object class="GtkSpinButton" id="ed_midi_data2">
+                      <object class="GtkLabel" id="label136">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">MIDI channel : </property>
+                      </object>
+                      <packing>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options"/>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ed_midi_label1">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options"/>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ed_midi_label2">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options"/>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="ed_midi_channel">
+                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="adjustment">adjustment1</property>
                         <property name="climb_rate">1</property>
@@ -519,8 +555,6 @@
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">3</property>
                         <property name="y_options"/>
                       </packing>
                     </child>
@@ -540,8 +574,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="ed_midi_channel">
-                        <property name="visible">True</property>
+                      <object class="GtkSpinButton" id="ed_midi_data2">
                         <property name="can_focus">True</property>
                         <property name="adjustment">adjustment3</property>
                         <property name="climb_rate">1</property>
@@ -550,41 +583,8 @@
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
-                        <property name="y_options"/>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="ed_midi_label2">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                      </object>
-                      <packing>
                         <property name="top_attach">2</property>
                         <property name="bottom_attach">3</property>
-                        <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"/>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="ed_midi_label1">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                      </object>
-                      <packing>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
-                        <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"/>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label136">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">MIDI channel : </property>
-                      </object>
-                      <packing>
-                        <property name="x_options">GTK_FILL</property>
                         <property name="y_options"/>
                       </packing>
                     </child>
@@ -980,70 +980,7 @@
                                     <property name="n_rows">2</property>
                                     <property name="n_columns">5</property>
                                     <child>
-                                      <object class="GtkLabel" id="label158">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Sub Frame</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">4</property>
-                                        <property name="right_attach">5</property>
-                                        <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label157">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Frame</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">3</property>
-                                        <property name="right_attach">4</property>
-                                        <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label156">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Second</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">2</property>
-                                        <property name="right_attach">3</property>
-                                        <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label155">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Hour</property>
-                                      </object>
-                                      <packing>
-                                        <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label154">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Minute</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="right_attach">2</property>
-                                        <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="ed_midi_msc_sframe">
+                                      <object class="GtkSpinButton" id="ed_midi_msc_hour">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="adjustment">adjustment8</property>
@@ -1051,15 +988,13 @@
                                         <property name="numeric">True</property>
                                       </object>
                                       <packing>
-                                        <property name="left_attach">4</property>
-                                        <property name="right_attach">5</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="y_options"/>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkSpinButton" id="ed_midi_msc_frame">
+                                      <object class="GtkSpinButton" id="ed_midi_msc_minute">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="adjustment">adjustment9</property>
@@ -1067,8 +1002,8 @@
                                         <property name="numeric">True</property>
                                       </object>
                                       <packing>
-                                        <property name="left_attach">3</property>
-                                        <property name="right_attach">4</property>
+                                        <property name="left_attach">1</property>
+                                        <property name="right_attach">2</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="y_options"/>
@@ -1091,7 +1026,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkSpinButton" id="ed_midi_msc_minute">
+                                      <object class="GtkSpinButton" id="ed_midi_msc_frame">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="adjustment">adjustment11</property>
@@ -1099,15 +1034,15 @@
                                         <property name="numeric">True</property>
                                       </object>
                                       <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="right_attach">2</property>
+                                        <property name="left_attach">3</property>
+                                        <property name="right_attach">4</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="y_options"/>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkSpinButton" id="ed_midi_msc_hour">
+                                      <object class="GtkSpinButton" id="ed_midi_msc_sframe">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="adjustment">adjustment12</property>
@@ -1115,8 +1050,73 @@
                                         <property name="numeric">True</property>
                                       </object>
                                       <packing>
+                                        <property name="left_attach">4</property>
+                                        <property name="right_attach">5</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label154">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Minute</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">1</property>
+                                        <property name="right_attach">2</property>
+                                        <property name="x_options">GTK_FILL</property>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label155">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Hour</property>
+                                      </object>
+                                      <packing>
+                                        <property name="x_options">GTK_FILL</property>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label156">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Second</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
+                                        <property name="x_options">GTK_FILL</property>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label157">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Frame</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">3</property>
+                                        <property name="right_attach">4</property>
+                                        <property name="x_options">GTK_FILL</property>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label158">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Sub Frame</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">4</property>
+                                        <property name="right_attach">5</property>
+                                        <property name="x_options">GTK_FILL</property>
                                         <property name="y_options"/>
                                       </packing>
                                     </child>
@@ -1138,17 +1138,28 @@
                                             <property name="n_columns">2</property>
                                             <property name="homogeneous">True</property>
                                             <child>
-                                              <object class="GtkRadioButton" id="ed_midi_msc_30df">
+                                              <object class="GtkRadioButton" id="ed_midi_msc_24">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
-                                                <property name="label" translatable="yes">30 Drop Frame</property>
+                                                <property name="label" translatable="yes">24 Frame</property>
+                                                <property name="use_underline">True</property>
+                                                <property name="draw_indicator">True</property>
+                                              </object>
+                                              <packing>
+                                                <property name="x_options">GTK_FILL</property>
+                                                <property name="y_options"/>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkRadioButton" id="ed_midi_msc_25">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="label" translatable="yes">25 Frame</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="draw_indicator">True</property>
                                                 <property name="group">ed_midi_msc_24</property>
                                               </object>
                                               <packing>
-                                                <property name="left_attach">1</property>
-                                                <property name="right_attach">2</property>
                                                 <property name="top_attach">1</property>
                                                 <property name="bottom_attach">2</property>
                                                 <property name="x_options">GTK_FILL</property>
@@ -1172,30 +1183,19 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkRadioButton" id="ed_midi_msc_25">
+                                              <object class="GtkRadioButton" id="ed_midi_msc_30df">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
-                                                <property name="label" translatable="yes">25 Frame</property>
+                                                <property name="label" translatable="yes">30 Drop Frame</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="draw_indicator">True</property>
                                                 <property name="group">ed_midi_msc_24</property>
                                               </object>
                                               <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
                                                 <property name="top_attach">1</property>
                                                 <property name="bottom_attach">2</property>
-                                                <property name="x_options">GTK_FILL</property>
-                                                <property name="y_options"/>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkRadioButton" id="ed_midi_msc_24">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">True</property>
-                                                <property name="label" translatable="yes">24 Frame</property>
-                                                <property name="use_underline">True</property>
-                                                <property name="draw_indicator">True</property>
-                                              </object>
-                                              <packing>
                                                 <property name="x_options">GTK_FILL</property>
                                                 <property name="y_options"/>
                                               </packing>

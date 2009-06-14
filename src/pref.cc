@@ -84,9 +84,12 @@ Preferences::Preferences(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
     : Gtk::Dialog(cobject), m_refXml(refXml)
 {
     Gtk::CheckButton * p_su;
+    Gtk::CheckButton * p_disable_move_next;
     m_refXml->get_widget("Pref_load_su", p_su);
+    m_refXml->get_widget("Pref_disable_move_next", p_disable_move_next);
     try {
         p_su->set_active(keyfile.get_boolean("main", "LoadLast"));
+        p_disable_move_next->set_active(keyfile.get_boolean("main", "DisableMoveNext"));
     }
     catch (...) {
     }
@@ -110,8 +113,11 @@ void Preferences::on_response(int r)
         return;
     case Gtk::RESPONSE_OK:
         Gtk::CheckButton * p_su;
+        Gtk::CheckButton * p_disable_move_next;
         m_refXml->get_widget("Pref_load_su", p_su);
+        m_refXml->get_widget("Pref_disable_move_next", p_disable_move_next);
         keyfile.set_boolean("main", "LoadLast", p_su->get_active());
+        keyfile.set_boolean("main", "DisableMoveNext", p_disable_move_next->get_active());
         break;
     }
     hide();
