@@ -26,6 +26,7 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
+
 // Fader
 
 Fader::Fader(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml)
@@ -65,6 +66,7 @@ EditCueWave::EditCueWave(Gtk::Notebook *p)
     refXML_wave->get_widget("ed_wave_file", m_wave_fentry);
     m_wave_fentry->signal_selection_changed().
 	connect(sigc::mem_fun(*this, &EditCueWave::wave_on_file_activate));
+    refXML_wave->get_widget("ed_wave_start", m_wave_start);
 
     for (int i = 0; i < 8; ++i) {
 	std::ostringstream s;
@@ -121,10 +123,7 @@ void EditCueWave::set(boost::shared_ptr<Cue> & c)
     boost::shared_ptr<Wave_Cue> q = boost::dynamic_pointer_cast<Wave_Cue>(c);
 
     m_wave_fentry->set_filename(q->file);
-
-    Gtk::SpinButton * stime;
-    refXML_wave->get_widget("ed_wave_start", stime);
-    stime->set_value(q->start_time);
+    m_wave_start->set_value(q->start_time);
 
     std::vector<Fader *>::const_iterator i = m_wave_faders.begin();
     std::vector<float>::const_iterator j = q->vol.begin();
@@ -147,10 +146,7 @@ void EditCueWave::get(boost::shared_ptr<Cue> & c)
     boost::shared_ptr<Wave_Cue> q = boost::dynamic_pointer_cast<Wave_Cue>(c);
 
     q->file = m_wave_fentry->get_filename();
-
-    Gtk::SpinButton * stime;
-    refXML_wave->get_widget("ed_wave_start", stime);
-    q->start_time = stime->get_value();
+    q->start_time = m_wave_start->get_value();
 
     q->vol.clear();
     std::vector<Fader *>::const_iterator i = m_wave_faders.begin();
@@ -177,22 +173,25 @@ void EditCueWave::get(boost::shared_ptr<Cue> & c)
 void EditCueWave::wave_on_file_activate()
 {
     std::string file = m_wave_fentry->get_filename();
-    AudioFile af(file.c_str());
-    double length = af.total_time();
-
-    std::ostringstream s;
-    s << dtoasctime(length);
-
-    Gtk::SpinButton * start;
-    refXML_wave->get_widget("ed_wave_start", start);
-    start->set_range(0, length);
+    if (file.size() == 0) return;
 
     Gtk::Label * p_len;
     refXML_wave->get_widget("ed_wave_llength", p_len);
     Gtk::Label * p_info;
     refXML_wave->get_widget("ed_wave_ltype", p_info);
 
-    p_len->set_text(s.str());
+    AudioFile af(file.c_str());
+    if (af.get_codec() == NoCodec) {
+        p_len->set_text("");
+        p_info->set_text("");
+        return;
+    }
+
+    double length = af.total_time();
+
+    m_wave_start->set_range(0.0, length);
+
+    p_len->set_text(dtoasctime(length));
     p_info->set_text(af.get_info_str());
     m_wave_tslide->set_range(0.0, length);
 }

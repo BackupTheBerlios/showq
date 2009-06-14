@@ -92,6 +92,7 @@ private:
     bool seek_lock;
 
     Gtk::FileChooserButton * m_wave_fentry;
+    Gtk::SpinButton * m_wave_start;
     Gtk::HScale * m_wave_tslide;
 
     std::vector<Fader *> m_wave_faders;

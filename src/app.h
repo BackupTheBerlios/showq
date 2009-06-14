@@ -95,16 +95,6 @@ public:
     bool update_icon;
 };
 
-class About : public Gtk::AboutDialog {
-public:
-    About(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml);
-    virtual ~About() {}
-    static std::auto_ptr<About> create();
-protected:
-    virtual void on_response(int);
-    Glib::RefPtr<Gtk::Builder> m_refXml;
-};
-
 class CueTreeStore : public Gtk::TreeStore {
 private:
     CueTreeStore();
@@ -125,9 +115,15 @@ public:
     };
     ModelColumns Col;
 
+    Gtk::TreeModel::iterator get_iter_from_id(long id);
+
     static Glib::RefPtr<CueTreeStore> create();
 protected:
     virtual bool row_drop_possible_vfunc(const Gtk::TreeModel::Path & dest, const Gtk::SelectionData & selection_data) const;
+private:
+    bool is_id(const TreeModel::iterator & i);
+    long m_id;
+    Gtk::TreeModel::iterator m_id_iter;
 };
 
 class CueTreeView : public Gtk::TreeView {
@@ -141,6 +137,9 @@ public:
     sigc::signal<void> signal_sneak_out() {return m_signal_sneak_out;}
 protected:
     virtual bool on_button_press_event(GdkEventButton *event);
+    virtual void on_drag_data_received(const Glib::RefPtr<Gdk::DragContext>& context,
+        int x, int y, const Gtk::SelectionData& selection_data, guint info, guint time);
+
     void on_edit();
     void on_pause();
     void on_stop();
@@ -155,6 +154,16 @@ private:
     sigc::signal<void> m_signal_stop;
     sigc::signal<void> m_signal_pause;
     sigc::signal<void> m_signal_sneak_out;
+};
+
+class About : public Gtk::AboutDialog {
+public:
+    About(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml);
+    virtual ~About() {}
+    static std::auto_ptr<About> create();
+protected:
+    virtual void on_response(int);
+    Glib::RefPtr<Gtk::Builder> m_refXml;
 };
 
 class App : public Gtk::Window {
@@ -173,8 +182,6 @@ public:
     MIDIengine * midi_engine;
 protected:
     bool dis_update();
-
-    void sig_row_change(const Gtk::TreeModel::Path &, const Gtk::TreeModel::iterator &);
 
     void on_view_item_activate(int, Glib::ustring);
     void on_properties_activate();
@@ -221,7 +228,6 @@ public:
     bool pb_pos_sel;
 
     Glib::RefPtr<CueTreeStore> m_refTreeModel;
-    std::map<long, Gtk::TreeRowReference> m_reftreerow;
     Gtk::TreeRowReference m_CurrentCue;
     long next_id;
 

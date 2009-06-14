@@ -32,10 +32,10 @@ Glib::KeyFile keyfile;
 Audio * audio;
 
 const char * glade_list[] = {
-    "./showq.glade",
-    "/home/errol/Projects/showq/src/showq.glade",
-    "/usr/share/showq/showq.glade",
-    "/usr/local/share/showq/showq.glade",
+    "./ui/",
+    "/home/errol/Projects/showq/src/ui/",
+    "/usr/share/showq/ui/",
+    "/usr/local/share/showq/ui/",
     0
 };
 
@@ -56,11 +56,11 @@ int main(int argc, char *argv[])
 
     if (!Glib::thread_supported()) Glib::thread_init();
 
-    //for (char **p = glade_list; *p; ++p) {
-	//if (Glib::file_test(*p, Glib::FILE_TEST_EXISTS)) {
-	    showq_ui = "/home/errol/Projects/showq/ui/";
-	//}
-    //}
+    for (const char **p = glade_list; *p; ++p) {
+	if (Glib::file_test(*p + std::string("app.ui"), Glib::FILE_TEST_EXISTS)) {
+	    showq_ui = *p;
+	}
+    }
 
     try {
         keyfile.load_from_file(Glib::get_home_dir() + "/ShowQ.conf");

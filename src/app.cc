@@ -141,37 +141,6 @@ void MIDIengine::midi_main()
     snd_midi_event_free(dev);
 }
 
-CueTreeStore::CueTreeStore()
-{
-    set_column_types(Col);
-}
-
-Glib::RefPtr<CueTreeStore> CueTreeStore::create()
-{
-    return Glib::RefPtr<CueTreeStore>(new CueTreeStore());
-}
-
-bool CueTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest,
-    const Gtk::SelectionData& selection_data) const
-{
-    Gtk::TreeModel::Path dest_parent = dest;
-    bool dest_is_not_top_level = dest_parent.up();
-
-    if(!dest_is_not_top_level || dest_parent.empty()) {
-        //The user wants to move something to the top-level.
-        //Let's always allow that.
-    } else {
-	iterator iter = (const_cast<CueTreeStore *>(this))->get_iter(dest_parent);
-        if(iter) {
-	    boost::shared_ptr<Cue> q = (*iter)[Col.cue];
-	    boost::shared_ptr<Group_Cue> pg = boost::dynamic_pointer_cast<Group_Cue>(q);
-	    return pg ? true : false;
-        }
-    }
-
-    return Gtk::TreeStore::row_drop_possible_vfunc(dest, selection_data);
-}
-
 App::App(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml)
     : Gtk::Window(cobject), m_refXml(refXml)
 {
@@ -279,7 +248,6 @@ App::App(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>& refXml)
     // Set up the tree view
     m_refXml->get_widget_derived("ap_treeview", m_treeview);
     m_refTreeModel = CueTreeStore::create();
-    m_refTreeModel->signal_row_changed().connect(sigc::mem_fun(*this, &App::sig_row_change));
     m_treeview->set_model(m_refTreeModel);
 
     Gtk::CellRendererText *cr;
@@ -518,13 +486,17 @@ void App::enable_hotkeys()
 
 // Hot keys
 
-bool App::on_key_press_event (GdkEventKey* event)
+bool App::on_key_press_event(GdkEventKey* event)
 {
-    if (Gtk::AccelGroup::valid(event->keyval, Gdk::ModifierType(event->state))) {
+    Glib::RefPtr<Gtk::Action> m =
+        Glib::RefPtr<Gtk::Action>::cast_static(m_refXml->get_object("m_go"));
+
+    if (m->get_sensitive() && Gtk::AccelGroup::valid(event->keyval, Gdk::ModifierType(event->state))) {
         keyval = event->keyval;
         state = Gdk::ModifierType(event->state);
         m_refTreeModel->foreach_iter(sigc::mem_fun(*this, &App::check_key));
     }
+
     return Window::on_key_press_event(event);
 }
 
@@ -653,7 +625,6 @@ void App::on_new_activate()
 	note.clear();
 	set_title("Show Q");
 	m_refTreeModel->clear();
-	m_reftreerow.clear();
 	next_id = 1;
     }
 }
@@ -666,7 +637,6 @@ void App::do_load(Glib::ustring filename)
         title.clear();
         note.clear();
         m_refTreeModel->clear();
-        m_reftreerow.clear();
         next_id = 1;
 
         OpenParser parser;
@@ -884,13 +854,6 @@ Gtk::TreeModel::iterator App::insert_cue(boost::shared_ptr<Cue> & q)
     if (q->cue_id_no >= next_id) next_id = q->cue_id_no + 1;
 
     return iter;
-}
-
-void App::sig_row_change(const Gtk::TreeModel::Path &p, const Gtk::TreeModel::iterator &iter)
-{
-    boost::shared_ptr<Cue> cue = (*iter)[m_refTreeModel->Col.cue];
-    long cue_id_no = cue->cue_id_no;
-    m_reftreerow[cue_id_no] = Gtk::TreeRowReference(m_refTreeModel, p);
 }
 
 void App::on_pause()
@@ -1124,15 +1087,8 @@ bool Pause_Cue::run(Gtk::TreeModel::iterator r)
 
 bool Start_Cue::run(Gtk::TreeModel::iterator r)
 {
-    std::map<long, Gtk::TreeRowReference>::iterator miter
-	= app->m_reftreerow.find(target);
-    if (miter != app->m_reftreerow.end()) {
-        Gtk::TreeRowReference path = miter->second;
-        Gtk::TreeModel::iterator iter = app->m_refTreeModel->get_iter(path.get_path());
-        if (iter) {
-	    app->go_cue(iter);
-        }
-    }
+    Gtk::TreeModel::iterator iter = app->m_refTreeModel->get_iter_from_id(target);
+    if (iter) app->go_cue(iter);
     return false;
 }
 
@@ -1370,6 +1326,14 @@ CueTreeView::CueTreeView(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builde
         ->signal_activate().connect(sigc::mem_fun(*this, &CueTreeView::on_pause));
     Glib::RefPtr<Gtk::Action>::cast_static(refPopupXml->get_object("menuitem4"))
         ->signal_activate().connect(sigc::mem_fun(*this, &CueTreeView::on_sneak_out));
+
+  //Targets:
+    std::list<Gtk::TargetEntry> listTargets;
+    listTargets.push_back(Gtk::TargetEntry("text/uri-list"));
+    listTargets.push_back(Gtk::TargetEntry("audio/ogg"));
+    listTargets.push_back(Gtk::TargetEntry("audio/x-wav"));
+
+    //enable_model_drag_dest(listTargets);
 }
 
 CueTreeView::~CueTreeView()
@@ -1393,6 +1357,12 @@ bool CueTreeView::on_button_press_event(GdkEventButton *event)
     return return_value;
 }
 
+void CueTreeView::on_drag_data_received(const Glib::RefPtr<Gdk::DragContext>& context,
+        int x, int y, const Gtk::SelectionData& selection_data, guint info, guint time)
+{
+    TreeView::on_drag_data_received(context, x, y, selection_data, info, time);
+}
+
 void CueTreeView::on_edit()
 {
     m_signal_edit.emit();
@@ -1411,4 +1381,52 @@ void CueTreeView::on_stop()
 void CueTreeView::on_sneak_out()
 {
     m_signal_sneak_out.emit();
+}
+
+CueTreeStore::CueTreeStore()
+{
+    set_column_types(Col);
+}
+
+Gtk::TreeModel::iterator CueTreeStore::get_iter_from_id(long id)
+{
+    m_id = id;
+    m_id_iter = Gtk::TreeIter();
+    foreach_iter(sigc::mem_fun(*this, &CueTreeStore::is_id));
+    return m_id_iter;
+}
+
+bool CueTreeStore::is_id(const TreeModel::iterator & i)
+{
+    boost::shared_ptr<Cue> q = (*i)[Col.cue];
+    if (m_id == q->cue_id_no) {
+        m_id_iter = i;
+        return true;
+    }
+    return false;
+}
+
+Glib::RefPtr<CueTreeStore> CueTreeStore::create()
+{
+    return Glib::RefPtr<CueTreeStore>(new CueTreeStore());
+}
+
+bool CueTreeStore::row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest,
+    const Gtk::SelectionData& selection_data) const
+{
+    Gtk::TreeModel::Path dest_parent = dest;
+    bool dest_is_not_top_level = dest_parent.up();
+
+    if(!dest_is_not_top_level || dest_parent.empty()) {
+        //The user wants to move something to the top-level.
+        //Let's always allow that.
+    } else {
+	iterator iter = (const_cast<CueTreeStore *>(this))->get_iter(dest_parent);
+        if(iter) {
+	    boost::shared_ptr<Cue> q = (*iter)[Col.cue];
+            return (q->cue_type() == Cue::Group);
+        }
+    }
+
+    return Gtk::TreeStore::row_drop_possible_vfunc(dest, selection_data);
 }

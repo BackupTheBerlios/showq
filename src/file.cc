@@ -395,6 +395,10 @@ void OpenParser::on_start_element(const Glib::ustring &name, const AttributeList
 		    cue = boost::shared_ptr<FadeStop_Cue>(new FadeStop_Cue);
 		else if (iter->value == "Group")
 		    cue = boost::shared_ptr<Group_Cue>(new Group_Cue);
+                else if (iter->value == "Pause")
+                    cue = boost::shared_ptr<Pause_Cue>(new Pause_Cue);
+                else if (iter->value == "Start")
+                    cue = boost::shared_ptr<Start_Cue>(new Start_Cue);
 	    }
 	    if (iter->name == "id")
 		cue_id_no = atol(iter->value.c_str());
@@ -426,6 +430,26 @@ void OpenParser::on_start_element(const Glib::ustring &name, const AttributeList
 	for (; iter != attributes.end(); ++iter) {
 	    if (iter->name == "mode")
 	        pg->mode = atol(iter->value.c_str());
+	}
+	return;
+    }
+
+    boost::shared_ptr<Start_Cue> pst = boost::dynamic_pointer_cast<Start_Cue>(cue);
+    if (pst && name == "Start") {
+	AttributeList::const_iterator iter = attributes.begin();
+	for (; iter != attributes.end(); ++iter) {
+	    if (iter->name == "target")
+		pst->target = atol(iter->value.c_str());
+	}
+	return;
+    }
+
+    boost::shared_ptr<Pause_Cue> pp = boost::dynamic_pointer_cast<Pause_Cue>(cue);
+    if (pp && name == "Pause") {
+	AttributeList::const_iterator iter = attributes.begin();
+	for (; iter != attributes.end(); ++iter) {
+	    if (iter->name == "target")
+		pp->target = atol(iter->value.c_str());
 	}
 	return;
     }
