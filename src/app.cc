@@ -856,6 +856,21 @@ Gtk::TreeModel::iterator App::insert_cue(boost::shared_ptr<Cue> & q)
     return iter;
 }
 
+Gtk::TreeModel::iterator App::insert_cue(Gtk::TreeModel::iterator i, boost::shared_ptr<Cue> & q)
+{
+    Gtk::TreeModel::iterator iter
+        = (i) ? m_refTreeModel->insert(i) : m_refTreeModel->append();
+    Gtk::TreeModel::Row row = *iter;
+
+    row[m_refTreeModel->Col.cue] = q;
+    row[m_refTreeModel->Col.delay] = "";
+    row[m_refTreeModel->Col.delay_percent] = 0;
+
+    if (q->cue_id_no >= next_id) next_id = q->cue_id_no + 1;
+
+    return iter;
+}
+
 void App::on_pause()
 {
     Gtk::TreeModel::iterator iter = m_treeview->get_selection()->get_selected();
@@ -1336,10 +1351,9 @@ CueTreeView::CueTreeView(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builde
   //Targets:
     std::list<Gtk::TargetEntry> listTargets;
     listTargets.push_back(Gtk::TargetEntry("text/uri-list"));
-    listTargets.push_back(Gtk::TargetEntry("audio/ogg"));
-    listTargets.push_back(Gtk::TargetEntry("audio/x-wav"));
+    listTargets.push_back(Gtk::TargetEntry("GTK_TREE_MODEL_ROW"));
 
-    //enable_model_drag_dest(listTargets);
+    enable_model_drag_dest(listTargets);
 }
 
 CueTreeView::~CueTreeView()
@@ -1367,6 +1381,32 @@ void CueTreeView::on_drag_data_received(const Glib::RefPtr<Gdk::DragContext>& co
         int x, int y, const Gtk::SelectionData& selection_data, guint info, guint time)
 {
     TreeView::on_drag_data_received(context, x, y, selection_data, info, time);
+
+    std::list<std::string> uris = selection_data.get_uris();
+
+    if (uris.size() == 0) return;
+
+    Gtk::TreeModel::Path path;
+    Gtk::TreeViewDropPosition pos;
+
+    get_dest_row_at_pos(x, y, path, pos);
+    Gtk::TreeModel::iterator iter = app->m_refTreeModel->get_iter(path);
+
+    if (pos == Gtk::TREE_VIEW_DROP_AFTER) ++iter;
+
+    for (std::list<std::string>::iterator i = uris.begin(); i != uris.end(); ++i) {
+        AudioFile af((Glib::filename_from_uri(*i)).c_str());
+        if (af.get_codec() == NoCodec) continue;
+        boost::shared_ptr<Cue> cue = boost::shared_ptr<Wave_Cue>(new Wave_Cue);
+        boost::shared_ptr<Wave_Cue> q = boost::dynamic_pointer_cast<Wave_Cue>(cue);
+        q->file = Glib::filename_from_uri(*i);
+        q->text = *i;
+        iter = app->insert_cue(iter, cue);
+        ++iter;
+    }
+
+    if (uris.size() > 0)
+        context->drag_finish(true, false, time);
 }
 
 void CueTreeView::on_edit()

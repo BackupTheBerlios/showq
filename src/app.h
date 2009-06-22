@@ -176,6 +176,8 @@ public:
     Gtk::TreeModel::iterator append_cue(boost::shared_ptr<Cue> &q);
     Gtk::TreeModel::iterator append_cue(boost::shared_ptr<Cue> &q, Gtk::TreeModel::iterator i);
     Gtk::TreeModel::iterator insert_cue(boost::shared_ptr<Cue> & q);
+    Gtk::TreeModel::iterator insert_cue(Gtk::TreeModel::iterator i, boost::shared_ptr<Cue> & q);
+
     void do_load(Glib::ustring filename);
     Gtk::TreeModel::iterator go_cue(Gtk::TreeModel::iterator iter, bool run_all = false);
 
